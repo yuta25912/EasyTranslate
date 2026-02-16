@@ -1,7 +1,7 @@
 class Plugin {
     constructor(workspace) {
         this.workspace = workspace;
-        this.catName = '🌍 EasyTranslate';
+        this.catName = '翻訳';
     }
 
     async onload() {
@@ -42,6 +42,20 @@ class Plugin {
             }
         };
 
+        // 2. 言語検知
+        Blockly.Blocks['translate_detect_lang'] = {
+            init: function () {
+                this.appendValueInput("TEXT")
+                    .setCheck("String")
+                    .appendField("🌍 ");
+                this.appendDummyInput()
+                    .appendField("が何語か調べる");
+                this.setOutput(true, "String");
+                this.setColour(230);
+                this.setTooltip("入力されたテキストが何語かを判定し、言語コード(ja, enなど)を返します。");
+            }
+        };
+
         const registerGenerator = (id, fn) => {
             if (Blockly.Python) {
                 if (Blockly.Python.forBlock) {
@@ -65,6 +79,18 @@ class Plugin {
             return [code, (Blockly.Python.ORDER_ATOMIC || 0)];
         });
 
+        // 言語検知ジェネレータ
+        registerGenerator('translate_detect_lang', (block) => {
+            const text = Blockly.Python.valueToCode(block, 'TEXT', (Blockly.Python.ORDER_ATOMIC || 0)) || '""';
+
+            if (Blockly.Python) {
+                Blockly.Python.definitions_['import_google_translator'] = 'from deep_translator import GoogleTranslator';
+            }
+
+            const code = `GoogleTranslator().detect(${text})`;
+            return [code, (Blockly.Python.ORDER_ATOMIC || 0)];
+        });
+
         this.updateToolbox();
     }
 
@@ -83,6 +109,7 @@ class Plugin {
 
         category.innerHTML = `
             <block type="translate_text"></block>
+            <block type="translate_detect_lang"></block>
         `;
 
         if (this.workspace && this.workspace.updateToolbox) {
