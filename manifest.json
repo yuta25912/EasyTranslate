@@ -4,6 +4,7 @@
     "version": "1.0.0-dev2",
     "author": "yuta25912",
     "description": "GoogleTranslatorを利用して、テキストを様々な言語にAPIキー不要で翻訳する機能を追加します。",
+    "icon": "🌍",
     "tags": [
         "utility",
         "translate"
@@ -13,5 +14,8 @@
     "repo": "https://github.com/yuta25912/EasyTranslate",
     "license": "MIT",
     "uuid": "f585bc3a-ad59-4110-bfc6-864cf5b7324d",
-    "minAppVersion": "1.0.0"
+    "minAppVersion": "1.0.0",
+    "externalPackages": [
+        "deep-translator"
+    ]
 }
