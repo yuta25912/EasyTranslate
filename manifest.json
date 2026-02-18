@@ -1,7 +1,7 @@
 {
     "id": "EasyTranslate",
     "name": "EasyTranslate",
-    "version": "1.0.0-dev2",
+    "version": "1.0.0",
     "author": "yuta25912",
     "description": "GoogleTranslatorを利用して、テキストを様々な言語にAPIキー不要で翻訳する機能を追加します。",
     "icon": "🌍",
