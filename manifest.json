@@ -16,6 +16,7 @@
     "uuid": "f585bc3a-ad59-4110-bfc6-864cf5b7324d",
     "minAppVersion": "1.0.0",
     "externalPackages": [
-        "deep-translator"
+        "deep-translator",
+        "langdetect"
     ]
 }

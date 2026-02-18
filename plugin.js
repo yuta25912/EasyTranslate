@@ -38,7 +38,7 @@ class Plugin {
                     .appendField("に翻訳");
                 this.setOutput(true, "String");
                 this.setColour(230);
-                this.setTooltip("指定したテキストをAPIキーなしで翻訳します。");
+                this.setTooltip("指定したテキストをAPIキーなしで翻訳します。ボットをブロックしないよう非同期で実行されます。");
             }
         };
 
@@ -52,7 +52,7 @@ class Plugin {
                     .appendField("が何語か調べる");
                 this.setOutput(true, "String");
                 this.setColour(230);
-                this.setTooltip("入力されたテキストが何語かを判定し、言語コード(ja, enなど)を返します。");
+                this.setTooltip("入力されたテキストが何語かを判定し、言語コード(ja, enなど)を返します。ボットをブロックしないよう非同期で実行されます。");
             }
         };
 
@@ -65,29 +65,33 @@ class Plugin {
             }
         };
 
-        // 翻訳実行ジェネレータ (GoogleTranslator)
+        // 翻訳実行ジェネレータ
+        // run_in_executor でスレッドを分けてボットをブロックしない
         registerGenerator('translate_text', (block) => {
             const text = Blockly.Python.valueToCode(block, 'TEXT', (Blockly.Python.ORDER_ATOMIC || 0)) || '""';
             const lang = block.getFieldValue('LANG');
 
             if (Blockly.Python) {
                 Blockly.Python.definitions_['import_google_translator'] = 'from deep_translator import GoogleTranslator';
+                Blockly.Python.definitions_['import_asyncio'] = 'import asyncio';
+                Blockly.Python.definitions_['import_functools'] = 'import functools';
             }
 
-            // source='auto' で自動言語検出
-            const code = `GoogleTranslator(source='auto', target='${lang}').translate(${text})`;
+            const code = `await asyncio.get_event_loop().run_in_executor(None, functools.partial(GoogleTranslator(source='auto', target='${lang}').translate, ${text}))`;
             return [code, (Blockly.Python.ORDER_ATOMIC || 0)];
         });
 
         // 言語検知ジェネレータ
+        // langdetect.detect を使用 (APIキー不要)
         registerGenerator('translate_detect_lang', (block) => {
             const text = Blockly.Python.valueToCode(block, 'TEXT', (Blockly.Python.ORDER_ATOMIC || 0)) || '""';
 
             if (Blockly.Python) {
-                Blockly.Python.definitions_['import_google_translator'] = 'from deep_translator import GoogleTranslator';
+                Blockly.Python.definitions_['import_langdetect'] = 'from langdetect import detect as _langdetect_detect';
+                Blockly.Python.definitions_['import_asyncio'] = 'import asyncio';
             }
 
-            const code = `GoogleTranslator().detect(${text})`;
+            const code = `await asyncio.get_event_loop().run_in_executor(None, _langdetect_detect, ${text})`;
             return [code, (Blockly.Python.ORDER_ATOMIC || 0)];
         });
 
